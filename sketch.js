@@ -9,6 +9,8 @@ var minutes;
 var seconds;
 var str;
 
+let buri;
+
 let groupNameField;
 let groupName;
 let userNameField;
