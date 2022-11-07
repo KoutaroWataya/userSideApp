@@ -1,4 +1,4 @@
-const heightBuffer = 15;
+const heightBuffer = 20;
 const widthBuffer = 15;
 const sheetUrl =
   "https://script.google.com/macros/s/AKfycbzZUbmL-UmL2kgoi_Viwb8V-LJVFSfkvT83oKMhqYlNUipL9D43M5qhBnzywWCzfdU/exec?";
@@ -47,15 +47,15 @@ function setup() {
   // 認識言語は日本語
   myRec.rec.lang = "ja";
 
-  let SpeechRecOnOffButton = createButton("Start");
+  let SpeechRecOnOffButton = createButton("On");
   SpeechRecOnOffButton.position(90 + widthBuffer, 40 + heightBuffer);
   // start/stop のDOMボタンを押したときに音声認識切り替えを行う
   SpeechRecOnOffButton.mouseClicked(toggleSpeechRecognition);
 
   groupNameField = createInput("");
-  groupNameField.position(110 + widthBuffer, 10 + heightBuffer);
+  groupNameField.position(130 + widthBuffer, 10 + heightBuffer);
   userNameField = createInput("");
-  userNameField.position(430 + widthBuffer, 10 + heightBuffer);
+  userNameField.position(450 + widthBuffer, 10 + heightBuffer);
 
   /*let testButton = createButton("test");
   testButton.mouseClicked(sendTest);*/
@@ -63,7 +63,7 @@ function setup() {
   for (i = 0; i < 5; i++) {
     let buttonName = "音" + i;
     soundButton[i] = createButton(buttonName);
-    soundButton[i].position(20 + 150 * i + widthBuffer, 70 + heightBuffer);
+    soundButton[i].position(25 + 150 * i + widthBuffer, 70 + heightBuffer);
     soundButton[i].size(100, 50);
     soundButton[i].style("background-color", col[0]);
   }
@@ -130,11 +130,11 @@ function draw() {
 
   stroke(0);
   textSize(18);
-  text("グループ名:", 0 + widthBuffer, 20 + heightBuffer);
+  text("グループ名:", 20 + widthBuffer, 20 + heightBuffer);
   groupName = groupNameField.value();
-  text("ニックネーム:", 300 + widthBuffer, 20 + heightBuffer);
+  text("ニックネーム:", 320 + widthBuffer, 20 + heightBuffer);
   userName = userNameField.value();
-  text("発話認識:", 0 + widthBuffer, 50 + heightBuffer);
+  text("マイク:", 20 + widthBuffer, 50 + heightBuffer);
 
   countMousePressedTime();
 
@@ -218,14 +218,14 @@ function toggleSpeechRecognition() {
   if (is_recognition_activated == true) {
     myRec.rec.lang = "ja"; // 日本語認識
     myRec.start(); // 認識スタート
-    this.html("Stop"); //ボタンの表示をstopにする
+    this.html("Off"); //ボタンの表示をstopにする
   }
   // 音声認識を停止させる
   else {
     // 音声認識をとめる
     myRec.stop();
     // ボタンの表示をstartにする
-    this.html("Start");
+    this.html("On");
   }
 }
 
