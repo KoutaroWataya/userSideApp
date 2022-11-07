@@ -1,13 +1,9 @@
 const heightBuffer = 15;
 const widthBuffer = 15;
 const sheetUrl =
-  "https://script.google.com/macros/s/AKfycbwvorsy_YqvG-sH7pMpGthZd6XLi0DLZZ0SegF9w0TaX4fiMET1ld70Hzm3KrNckAb0/exec?";
+  "https://script.google.com/macros/s/AKfycbzZUbmL-UmL2kgoi_Viwb8V-LJVFSfkvT83oKMhqYlNUipL9D43M5qhBnzywWCzfdU/exec?";
 
 var dObj; // = new Date();
-var hours;
-var minutes;
-var seconds;
-var str;
 
 let buri;
 
@@ -124,7 +120,7 @@ function setup() {
 }
 
 function draw() {
-  dObj = new Date();
+  //dObj = new Date();
 
   background(255);
   strokeWeight(5);
@@ -179,15 +175,20 @@ function fetchButtonData(buttonNumber) {
   selectedSoundNumber = buttonNumber + buttonLevel * 5;
 
   if (groupName == "") {
-    groupName = "noName";
+    groupName = "noNameGroup";
   }
   if (userName == "") {
-    userName = "noName";
+    userName = "noNameUser";
   }
+
+  dObj = new Date();
+  let str = getTimeStr(dObj);
 
   fetch(
     sheetUrl +
       "&tag=0" +
+      "&userSendDataTime=" +
+      str +
       "&groupName=" +
       groupName +
       "&userName=" +
@@ -262,16 +263,16 @@ function endSpeech() {
           let str = getTimeStr(dObj);
 
           if (groupName == "") {
-            groupName = "noName";
+            groupName = "noNameGroup";
           }
           if (userName == "") {
-            userName = "noName";
+            userName = "noNameUser";
           }
 
           fetch(
             sheetUrl +
-              "&tag=2" +
-              "&time=" +
+              "&tag=1" +
+              "&userSendDataTime" +
               str +
               "&groupName=" +
               groupName +
@@ -332,10 +333,17 @@ function sendTest() {
       }
       let text = rowText.split(" ").join("");
 
+      if (groupName == "") {
+        groupName = "noNameGroup";
+      }
+      if (userName == "") {
+        userName = "noNameUser";
+      }
+
       fetch(
         sheetUrl +
-          "&tag=2" +
-          "&time=" +
+          "&tag=1" +
+          "&userSendDataTime=" +
           str +
           "&groupName=" +
           groupName +
