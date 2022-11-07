@@ -5,7 +5,7 @@ const sheetUrl =
 
 var dObj; // = new Date();
 
-let buri;
+let henkou;
 
 let groupNameField;
 let groupName;
