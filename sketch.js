@@ -24,7 +24,7 @@ let col = [];
 let nowPressedButtonNumber = -1;
 
 function setup() {
-  createCanvas(810, 210);
+  createCanvas(770, 160);
 
   col[0] = color(245, 245, 245);
   col[1] = color(70, 130, 180);
@@ -57,13 +57,13 @@ function setup() {
   userNameField = createInput("");
   userNameField.position(430 + widthBuffer, 10 + heightBuffer);
 
-  let testButton = createButton("test");
-  testButton.mouseClicked(sendTest);
+  /*let testButton = createButton("test");
+  testButton.mouseClicked(sendTest);*/
 
   for (i = 0; i < 5; i++) {
     let buttonName = "音" + i;
     soundButton[i] = createButton(buttonName);
-    soundButton[i].position(20 + 150 * i + widthBuffer, 120 + heightBuffer);
+    soundButton[i].position(20 + 150 * i + widthBuffer, 70 + heightBuffer);
     soundButton[i].size(100, 50);
     soundButton[i].style("background-color", col[0]);
   }
@@ -125,7 +125,7 @@ function draw() {
   background(255);
   strokeWeight(5);
   stroke(22, 22, 102);
-  rect(3, 3, 800, 200, 30);
+  rect(3, 3, 760, 150, 30);
   strokeWeight(1);
 
   stroke(0);
@@ -196,8 +196,6 @@ function fetchButtonData(buttonNumber) {
       "&selectedSoundNumber=" +
       selectedSoundNumber
   );
-  //.then((response) => response.json());
-  //.then((data) => console.log(data));
 }
 
 function getTimeStr(dObj) {
