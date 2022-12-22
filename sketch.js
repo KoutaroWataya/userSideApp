@@ -1,7 +1,7 @@
 const heightBuffer = 20;
 const widthBuffer = 15;
 const sheetUrl =
-  "https://script.google.com/macros/s/AKfycbzZUbmL-UmL2kgoi_Viwb8V-LJVFSfkvT83oKMhqYlNUipL9D43M5qhBnzywWCzfdU/exec?";
+  "https://script.google.com/macros/s/AKfycbz2pO03671_dETB9HAGQw1QVJaKZ7nxPFjYGHiWk3vRBA4BTy5uvIyuYuUu6HmfCBkh/exec?";
 
 var dObj; // = new Date();
 
@@ -23,12 +23,23 @@ let flameCount = 0;
 let col = [];
 let nowPressedButtonNumber = -1;
 
+//p2pあたりの変数
+var peer,
+  thisid,
+  conn,
+  text,
+  send,
+  ison = false,
+  lasttext = "";
+
 function setup() {
   createCanvas(770, 160);
 
   col[0] = color(245, 245, 245);
   col[1] = color(70, 130, 180);
   col[2] = color(0, 0, 128);
+
+  let connnect;
 
   myRec.onEnd = endSpeech;
 
@@ -48,14 +59,14 @@ function setup() {
   myRec.rec.lang = "ja";
 
   let SpeechRecOnOffButton = createButton("On");
-  SpeechRecOnOffButton.position(90 + widthBuffer, 40 + heightBuffer);
+  SpeechRecOnOffButton.position(400 + widthBuffer, 40 + heightBuffer);
   // start/stop のDOMボタンを押したときに音声認識切り替えを行う
   SpeechRecOnOffButton.mouseClicked(toggleSpeechRecognition);
 
   groupNameField = createInput("");
-  groupNameField.position(130 + widthBuffer, 10 + heightBuffer);
+  groupNameField.position(150 + widthBuffer, 10 + heightBuffer);
   userNameField = createInput("");
-  userNameField.position(450 + widthBuffer, 10 + heightBuffer);
+  userNameField.position(150 + widthBuffer, 40 + heightBuffer);
 
   /*let testButton = createButton("test");
   testButton.mouseClicked(sendTest);*/
@@ -74,6 +85,7 @@ function setup() {
   });
 
   soundButton[0].mouseReleased(function () {
+    p2pSendButtonNumber(0);
     fetchButtonData(0);
     soundButtonPressedFlag = false;
   });
@@ -84,6 +96,7 @@ function setup() {
   });
 
   soundButton[1].mouseReleased(function () {
+    p2pSendButtonNumber(1);
     fetchButtonData(1);
     soundButtonPressedFlag = false;
   });
@@ -94,6 +107,7 @@ function setup() {
   });
 
   soundButton[2].mouseReleased(function () {
+    p2pSendButtonNumber(2);
     fetchButtonData(2);
     soundButtonPressedFlag = false;
   });
@@ -104,6 +118,7 @@ function setup() {
   });
 
   soundButton[3].mouseReleased(function () {
+    p2pSendButtonNumber(3);
     fetchButtonData(3);
     soundButtonPressedFlag = false;
   });
@@ -114,13 +129,25 @@ function setup() {
   });
 
   soundButton[4].mouseReleased(function () {
+    p2pSendButtonNumber(4);
     fetchButtonData(4);
     soundButtonPressedFlag = false;
   });
+
+  //p2pあたりの処理
+  peer = new Peer();
+  peer.on("open", () => {
+    console.log(peer.id);
+  });
+
+  connect = createButton("connect");
+  connect.position(320, 30);
+  connect.mousePressed(connectOn);
 }
 
 function draw() {
   //dObj = new Date();
+  let connectionStatus = "未接続";
 
   background(255);
   strokeWeight(5);
@@ -130,11 +157,15 @@ function draw() {
 
   stroke(0);
   textSize(18);
-  text("グループ名:", 20 + widthBuffer, 20 + heightBuffer);
+  text("グループID", 30 + widthBuffer, 20 + heightBuffer);
   groupName = groupNameField.value();
-  text("ニックネーム:", 320 + widthBuffer, 20 + heightBuffer);
+  if (ison == true) {
+    connectionStatus = "接続確立";
+  }
+  text("接続状況:" + connectionStatus, 400 + widthBuffer, 20 + heightBuffer);
+  text("ニックネーム", 20 + widthBuffer, 50 + heightBuffer);
   userName = userNameField.value();
-  text("マイク:", 20 + widthBuffer, 50 + heightBuffer);
+  text("マイク", 320 + widthBuffer, 50 + heightBuffer);
 
   countMousePressedTime();
 
@@ -202,11 +233,17 @@ function getTimeStr(dObj) {
   hours = dObj.getHours();
   minutes = dObj.getMinutes();
   seconds = dObj.getSeconds();
+  miliSeconds = dObj.getMilliseconds();
 
   if (hours < 10) hours = "0" + hours;
   if (minutes < 10) minutes = "0" + minutes;
   if (seconds < 10) seconds = "0" + seconds;
-  var str = hours + ":" + minutes + ":" + seconds;
+  if (miliSeconds < 10) {
+    miliSeconds = "00" + miliSeconds;
+  } else if (miliSeconds < 100) {
+    miliSeconds = "0" + miliSeconds;
+  }
+  var str = hours + ":" + minutes + ":" + seconds + ":" + miliSeconds;
   return str;
 }
 
@@ -353,4 +390,35 @@ function sendTest() {
           text.length
       );
     });
+}
+
+function connectOn() {
+  conn = peer.connect(groupNameField.value());
+  // on open will be launch when you successfully connect to PeerServer
+  conn.on("open", function () {
+    // here you have conn.id
+    console.log("通信確率");
+    conn.send("hello there");
+    ison = true;
+  });
+}
+
+function p2pSendButtonNumber(buttonNumber) {
+  if (!peer) return;
+  if (!ison) return;
+
+  let buttonLevel;
+  let selectedSoundNumber;
+
+  if (mousePressedTime < 1) {
+    buttonLevel = 0;
+  } else if (1 <= mousePressedTime && mousePressedTime < 2) {
+    buttonLevel = 1;
+  } else {
+    buttonLevel = 2;
+  }
+
+  selectedSoundNumber = buttonNumber + buttonLevel * 5;
+
+  conn.send(selectedSoundNumber);
 }
