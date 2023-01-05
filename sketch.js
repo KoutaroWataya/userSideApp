@@ -16,6 +16,7 @@ var myRec = new p5.SpeechRec(); // new P5.SpeechRec object
 var is_recognition_activated = false;
 
 let soundButton = [];
+let buttonName = ["😄", "😭", "😡", "👏", "🍻"];
 
 let soundButtonPressedFlag = false;
 let mousePressedTime = 0;
@@ -38,6 +39,7 @@ function setup() {
   col[0] = color(245, 245, 245);
   col[1] = color(70, 130, 180);
   col[2] = color(0, 0, 128);
+  col[3] = color(105, 105, 105);
 
   let connnect;
 
@@ -58,8 +60,9 @@ function setup() {
   // 認識言語は日本語
   myRec.rec.lang = "ja";
 
-  let SpeechRecOnOffButton = createButton("On");
-  SpeechRecOnOffButton.position(400 + widthBuffer, 40 + heightBuffer);
+  let SpeechRecOnOffButton = createButton("OFF");
+  SpeechRecOnOffButton.style("background", "#808080");
+  SpeechRecOnOffButton.position(670 + widthBuffer, 12 + heightBuffer);
   // start/stop のDOMボタンを押したときに音声認識切り替えを行う
   SpeechRecOnOffButton.mouseClicked(toggleSpeechRecognition);
 
@@ -72,8 +75,9 @@ function setup() {
   testButton.mouseClicked(sendTest);*/
 
   for (i = 0; i < 5; i++) {
-    let buttonName = "音" + i;
-    soundButton[i] = createButton(buttonName);
+    //let buttonName = "音" + i;
+    soundButton[i] = createButton(buttonName[i]);
+    soundButton[i].style("font-size", "30px");
     soundButton[i].position(25 + 150 * i + widthBuffer, 70 + heightBuffer);
     soundButton[i].size(100, 50);
     soundButton[i].style("background-color", col[0]);
@@ -85,9 +89,7 @@ function setup() {
   });
 
   soundButton[0].mouseReleased(function () {
-    p2pSendButtonNumber(0);
-    fetchButtonData(0);
-    soundButtonPressedFlag = false;
+    button_MouseReleased(0);
   });
 
   soundButton[1].mousePressed(function () {
@@ -96,9 +98,7 @@ function setup() {
   });
 
   soundButton[1].mouseReleased(function () {
-    p2pSendButtonNumber(1);
-    fetchButtonData(1);
-    soundButtonPressedFlag = false;
+    button_MouseReleased(1);
   });
 
   soundButton[2].mousePressed(function () {
@@ -107,9 +107,7 @@ function setup() {
   });
 
   soundButton[2].mouseReleased(function () {
-    p2pSendButtonNumber(2);
-    fetchButtonData(2);
-    soundButtonPressedFlag = false;
+    button_MouseReleased(2);
   });
 
   soundButton[3].mousePressed(function () {
@@ -118,9 +116,7 @@ function setup() {
   });
 
   soundButton[3].mouseReleased(function () {
-    p2pSendButtonNumber(3);
-    fetchButtonData(3);
-    soundButtonPressedFlag = false;
+    button_MouseReleased(3);
   });
 
   soundButton[4].mousePressed(function () {
@@ -129,9 +125,7 @@ function setup() {
   });
 
   soundButton[4].mouseReleased(function () {
-    p2pSendButtonNumber(4);
-    fetchButtonData(4);
-    soundButtonPressedFlag = false;
+    button_MouseReleased(4);
   });
 
   //p2pあたりの処理
@@ -165,7 +159,7 @@ function draw() {
   text("接続状況:" + connectionStatus, 400 + widthBuffer, 20 + heightBuffer);
   text("ニックネーム", 20 + widthBuffer, 50 + heightBuffer);
   userName = userNameField.value();
-  text("マイク", 320 + widthBuffer, 50 + heightBuffer);
+  text("マイク", 600 + widthBuffer, 20 + heightBuffer);
 
   countMousePressedTime();
 
@@ -178,8 +172,13 @@ function countMousePressedTime() {
     mousePressedTime = flameCount / 60;
     if (1 <= mousePressedTime && mousePressedTime < 2) {
       soundButton[nowPressedButtonNumber].style("background-color", col[1]);
-    } else if (2 < mousePressedTime) {
+    } else if (2 <= mousePressedTime && mousePressedTime < 3) {
       soundButton[nowPressedButtonNumber].style("background-color", col[2]);
+    } else if (3 <= mousePressedTime) {
+      soundButton[nowPressedButtonNumber].style("background-color", col[3]);
+      soundButton[nowPressedButtonNumber].style("color", "#FFFFFF");
+      soundButton[nowPressedButtonNumber].style("font-size", "15px");
+      soundButton[nowPressedButtonNumber].html("キャンセル");
     }
   } else {
     flameCount = 0;
@@ -199,8 +198,10 @@ function fetchButtonData(buttonNumber) {
     buttonLevel = 0;
   } else if (1 <= mousePressedTime && mousePressedTime < 2) {
     buttonLevel = 1;
-  } else {
+  } else if (2 <= mousePressedTime && mousePressedTime < 3) {
     buttonLevel = 2;
+  } else {
+    return;
   }
 
   selectedSoundNumber = buttonNumber + buttonLevel * 5;
@@ -255,14 +256,16 @@ function toggleSpeechRecognition() {
   if (is_recognition_activated == true) {
     myRec.rec.lang = "ja"; // 日本語認識
     myRec.start(); // 認識スタート
-    this.html("Off"); //ボタンの表示をstopにする
+    this.style("background", "#00ff00");
+    this.html("ON"); //ボタンの表示をstopにする
   }
   // 音声認識を停止させる
   else {
     // 音声認識をとめる
     myRec.stop();
+    this.style("background", "#808080");
     // ボタンの表示をstartにする
-    this.html("On");
+    this.html("OFF");
   }
 }
 
@@ -414,11 +417,21 @@ function p2pSendButtonNumber(buttonNumber) {
     buttonLevel = 0;
   } else if (1 <= mousePressedTime && mousePressedTime < 2) {
     buttonLevel = 1;
-  } else {
+  } else if (2 <= mousePressedTime && mousePressedTime < 3) {
     buttonLevel = 2;
+  } else {
+    return;
   }
 
   selectedSoundNumber = buttonNumber + buttonLevel * 5;
 
   conn.send(selectedSoundNumber);
+}
+
+function button_MouseReleased(buttonNumber) {
+  p2pSendButtonNumber(buttonNumber);
+  fetchButtonData(buttonNumber);
+  soundButton[buttonNumber].style("font-size", "30px");
+  soundButton[buttonNumber].html(buttonName[buttonNumber]);
+  soundButtonPressedFlag = false;
 }
