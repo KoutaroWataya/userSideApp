@@ -3,7 +3,7 @@ const widthBuffer = 15;
 const sheetUrl =
   "https://script.google.com/macros/s/AKfycbz2pO03671_dETB9HAGQw1QVJaKZ7nxPFjYGHiWk3vRBA4BTy5uvIyuYuUu6HmfCBkh/exec?";
 
-var dObj; // = new Date();
+//var dObj; // = new Date();
 
 let henkou;
 
@@ -13,7 +13,7 @@ let userNameField;
 let userName;
 
 var myRec = new p5.SpeechRec(); // new P5.SpeechRec object
-var is_recognition_activated = false;
+var is_recognition_activated;
 
 let soundButton = [];
 let buttonName = ["😄", "😭", "😡", "👏", "🍻"];
@@ -37,9 +37,10 @@ function setup() {
   createCanvas(770, 160);
 
   col[0] = color(245, 245, 245);
-  col[1] = color(70, 130, 180);
-  col[2] = color(0, 0, 128);
-  col[3] = color(105, 105, 105);
+  col[1] = color("#aad5ff");
+  col[2] = color("#2b95ff");
+  col[3] = color("#0055aa");
+  col[4] = color(105, 105, 105);
 
   let connnect;
 
@@ -55,13 +56,13 @@ function setup() {
   myRec.interimResults = false; // allow partial recognition (faster, less accurate)
 
   // プログラム制御用変数（true: 音声認識利用中を示す）
-  is_recognition_activated = false;
+  is_recognition_activated = true;
 
   // 認識言語は日本語
   myRec.rec.lang = "ja";
 
-  let SpeechRecOnOffButton = createButton("OFF");
-  SpeechRecOnOffButton.style("background", "#808080");
+  let SpeechRecOnOffButton = createButton("ON");
+  SpeechRecOnOffButton.style("background", "#00ff00");
   SpeechRecOnOffButton.position(670 + widthBuffer, 12 + heightBuffer);
   // start/stop のDOMボタンを押したときに音声認識切り替えを行う
   SpeechRecOnOffButton.mouseClicked(toggleSpeechRecognition);
@@ -137,6 +138,8 @@ function setup() {
   connect = createButton("connect");
   connect.position(320, 30);
   connect.mousePressed(connectOn);
+
+  myRec.start(); // 認識スタート
 }
 
 function draw() {
@@ -170,12 +173,15 @@ function countMousePressedTime() {
   if (soundButtonPressedFlag) {
     flameCount++;
     mousePressedTime = flameCount / 60;
-    if (1 <= mousePressedTime && mousePressedTime < 2) {
+    if (mousePressedTime < 1) {
       soundButton[nowPressedButtonNumber].style("background-color", col[1]);
-    } else if (2 <= mousePressedTime && mousePressedTime < 3) {
+    }
+    if (1 <= mousePressedTime && mousePressedTime < 2) {
       soundButton[nowPressedButtonNumber].style("background-color", col[2]);
-    } else if (3 <= mousePressedTime) {
+    } else if (2 <= mousePressedTime && mousePressedTime < 3) {
       soundButton[nowPressedButtonNumber].style("background-color", col[3]);
+    } else if (3 <= mousePressedTime) {
+      soundButton[nowPressedButtonNumber].style("background-color", col[4]);
       soundButton[nowPressedButtonNumber].style("color", "#FFFFFF");
       soundButton[nowPressedButtonNumber].style("font-size", "15px");
       soundButton[nowPressedButtonNumber].html("キャンセル");
@@ -213,7 +219,7 @@ function fetchButtonData(buttonNumber) {
     userName = "noNameUser";
   }
 
-  dObj = new Date();
+  let dObj = new Date();
   let str = getTimeStr(dObj);
 
   fetch(
@@ -297,7 +303,7 @@ function endSpeech() {
           }
 
           const sendText = rowText.split(" ").join("");
-          dObj = new Date();
+          let dObj = new Date();
           let str = getTimeStr(dObj);
 
           if (groupName == "") {
@@ -307,10 +313,12 @@ function endSpeech() {
             userName = "noNameUser";
           }
 
+          console.log(str);
+
           fetch(
             sheetUrl +
               "&tag=1" +
-              "&userSendDataTime" +
+              "&userSendDataTime=" +
               str +
               "&groupName=" +
               groupName +
