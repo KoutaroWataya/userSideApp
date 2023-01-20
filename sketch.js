@@ -313,7 +313,7 @@ function endSpeech() {
             userName = "noNameUser";
           }
 
-          console.log(str);
+          //console.log(str);
 
           fetch(
             sheetUrl +
