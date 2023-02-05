@@ -56,13 +56,15 @@ function setup() {
   myRec.interimResults = false; // allow partial recognition (faster, less accurate)
 
   // プログラム制御用変数（true: 音声認識利用中を示す）
-  is_recognition_activated = true;
+  is_recognition_activated = false;
 
   // 認識言語は日本語
   myRec.rec.lang = "ja";
 
-  let SpeechRecOnOffButton = createButton("ON");
-  SpeechRecOnOffButton.style("background", "#00ff00");
+  //let SpeechRecOnOffButton = createButton("ON");
+  let SpeechRecOnOffButton = createButton("OFF");
+  //SpeechRecOnOffButton.style("background", "#00ff00");
+  SpeechRecOnOffButton.style("background", "#808080");
   SpeechRecOnOffButton.position(670 + widthBuffer, 12 + heightBuffer);
   // start/stop のDOMボタンを押したときに音声認識切り替えを行う
   SpeechRecOnOffButton.mouseClicked(toggleSpeechRecognition);
@@ -75,11 +77,11 @@ function setup() {
   /*let testButton = createButton("test");
   testButton.mouseClicked(sendTest);*/
 
-  for (i = 0; i < 5; i++) {
+  for (i = 0; i < 4; i++) {
     //let buttonName = "音" + i;
     soundButton[i] = createButton(buttonName[i]);
     soundButton[i].style("font-size", "30px");
-    soundButton[i].position(25 + 150 * i + widthBuffer, 70 + heightBuffer);
+    soundButton[i].position(25 + 200 * i + widthBuffer, 70 + heightBuffer);
     soundButton[i].size(100, 50);
     soundButton[i].style("background-color", col[0]);
   }
@@ -120,14 +122,14 @@ function setup() {
     button_MouseReleased(3);
   });
 
-  soundButton[4].mousePressed(function () {
+  /* soundButton[4].mousePressed(function () {
     soundButtonPressedFlag = true;
     nowPressedButtonNumber = 4;
   });
 
   soundButton[4].mouseReleased(function () {
     button_MouseReleased(4);
-  });
+  });*/
 
   //p2pあたりの処理
   peer = new Peer();
